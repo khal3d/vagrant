@@ -20,19 +20,22 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network :forwarded_port, guest: 3306, host: 3306, :id => "mysql", auto_correct: true
   config.vm.network :forwarded_port, guest: 1025, host: 1025, :id => "mailcatcher_smtp", auto_correct: true
   config.vm.network :forwarded_port, guest: 1080, host: 1080, :id => "mailcatcher_web", auto_correct: true
+  config.vm.network :forwarded_port, guest: 8125, host: 8125, :id => "statD", auto_correct: true
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
-  # config.vm.network :private_network, ip: "192.168.33.10"
+  config.vm.network :private_network, ip: "192.168.33.10"
 
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
   # your network.
-  # config.vm.network :public_network
+  # config.vm.network :public_network, :bridge => 'en1: Wi-Fi (AirPort)', ip: "192.168.1.55"
+
+  config.vm.network :public_network
 
   # If true, then any SSH connections made will enable agent forwarding.
   # Default value: false
-  # config.ssh.forward_agent = true
+  config.ssh.forward_agent = true
 
   config.vm.hostname = "localhost.vm"
 
@@ -40,7 +43,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # the path on the host to the actual folder. The second argument is
   # the path on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
-  config.vm.synced_folder "../www", "/var/www", owner: "www-data", group: "www-data"
+  # config.vm.synced_folder "../www", "/var/www", owner: "www-data", group: "www-data"
+  config.vm.synced_folder "../www", "/var/www", nfs: true
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options. 
@@ -48,7 +52,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     # Use VBoxManage to customize the VM. For example to change memory:
     vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-    # vb.customize ["modifyvm", :id, "--memory", "1024", "--cpus", "2"]
+    vb.customize ["modifyvm", :id, "--memory", "1024", "--cpus", "2"]
     vb.customize ["modifyvm", :id, "--name", "web-box-raring"]
   end
 
